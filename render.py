@@ -52,7 +52,7 @@ class Rainbow:
         t = t.elapsed()
 
         # Calculate the colour for each pixel based off pi, colours in 3 phase
-        b = self.c*(np.sin((self.x+(t))*np.pi))+c
+        b = self.c*(np.sin((self.x+(t))*np.pi))+self.c
         g = self.c*(np.sin(((self.x+(t))*np.pi)+((2/3)*np.pi)))+self.c
         r = self.c*(np.sin(((self.x+(t))*np.pi)+((4/3)*np.pi)))+self.c
 
@@ -63,9 +63,9 @@ class Rainbow:
         # r_scaled = (r * 255).astype(np.uint8)
 
         # Set the colour of the pixels in the given width across the y axis
-        self.screen[:, 0:w.width, 0] = b
-        self.screen[:, 0:w.width, 1] = g
-        self.screen[:, 0:w.width, 2] = r
+        self.screen[:, 0:self.w.width, 0] = b
+        self.screen[:, 0:self.w.width, 1] = g
+        self.screen[:, 0:self.w.width, 2] = r
 
         # # Old loop way
         # # Create a gradient rainbow image
