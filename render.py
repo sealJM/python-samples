@@ -35,51 +35,72 @@ class Time_D:
         return now - self.start
 
 
-def rainbow(w, t):
-    screen = np.zeros((w.height, w.width, 3), dtype=np.uint8)
-    elap = t.elapsed()
+class Rainbow:
+    def __init__(self, w) -> None:
+        # Create 1d array for width
+        self.x_coords = np.linspace(0, 1, w.width)
+        # Create screen array for colour space
+        self.screen = np.zeros((w.height, w.width, 3), dtype=np.uint8)
+        self.w = w
+        self.c = 128
 
-    x_coords = np.linspace(0, 1, w.width)
+    def rainbow(self, t):
+        # Blank the screen
+        # self.screen[:, :, :] = 0
 
-    b = 0.5*(np.sin((x_coords+(elap/5))*np.pi))+0.5
-    g = 0.5*(np.sin(((x_coords+(elap/5))*np.pi)+((2/3)*np.pi)))+0.5
-    r = 0.5*(np.sin(((x_coords+(elap/5))*np.pi)+((4/3)*np.pi)))+0.5
+        # Time elapsed is used to move the rotation of colours
+        t = t.elapsed()
 
-    b_scaled = (b * 255).astype(np.uint8)
-    g_scaled = (g * 255).astype(np.uint8)
-    r_scaled = (r * 255).astype(np.uint8)
+        x_coords = self.x_coords
+        screen = self.screen
+        w = self.w
+        c = self.c
 
-    screen[:, 0:w.width, 0] = b_scaled
-    screen[:, 0:w.width, 1] = g_scaled
-    screen[:, 0:w.width, 2] = r_scaled
+        # Calculate the colour for each pixel based off pi, colours in 3 phase
+        b = c*(np.sin((x_coords+(t))*np.pi))+c
+        g = c*(np.sin(((x_coords+(t))*np.pi)+((2/3)*np.pi)))+c
+        r = c*(np.sin(((x_coords+(t))*np.pi)+((4/3)*np.pi)))+c
 
-    # # Old Slow way
-    # # Create a gradient rainbow image
-    # for x in range(w.width):
-    #     b = 0.5*(math.sin(((x/w.width)+elap)*np.pi))+0.5
-    #     g = 0.5*(math.sin((((x/w.width)+elap)*np.pi)+((2/3)*math.pi)))+0.5
-    #     r = 0.5*(math.sin((((x/w.width)+elap)*np.pi)+((4/3)*math.pi)))+0.5
-    #     screen[:, x, 0] = b * 255  # Blue channel
-    #     screen[:, x, 1] = g * 255  # Green channel
-    #     screen[:, x, 2] = r * 255  # Red channel
-    w.show(screen)
-    return screen
+        # Scale the output of the colour value to 256 bit
+        # b_scaled = (b * 255).astype(np.uint8)
+        # g_scaled = (g * 255).astype(np.uint8)
+        # r_scaled = (r * 255).astype(np.uint8)
+
+        # Set the colour of the pixels in the given width across the y axis
+        screen[:, 0:w.width, 0] = b
+        screen[:, 0:w.width, 1] = g
+        screen[:, 0:w.width, 2] = r
+
+        # # Old loop way
+        # # Create a gradient rainbow image
+        # for x in range(w.width):
+        #     b = 0.5*(math.sin(((x/w.width)+t)*np.pi))+0.5
+        #     g = 0.5*(math.sin((((x/w.width)+t)*np.pi)+((2/3)*math.pi)))+0.5
+        #     r = 0.5*(math.sin((((x/w.width)+t)*np.pi)+((4/3)*math.pi)))+0.5
+        #     screen[:, x, 0] = b * 255  # Blue channel
+        #     screen[:, x, 1] = g * 255  # Green channel
+        #     screen[:, x, 2] = r * 255  # Red channel
+        w.show(screen)
+        return screen
 
 
 def main():
     # Init window
-    w = Window('Rainbow', fs=True)
+    w = Window('Rainbow')
     # Init timer object
     t = Time_D()
+    # Init rainbow
+    rainbow = Rainbow(w)
 
     # Define the codec and create VideoWriter object
     # fourcc = cv2.VideoWriter_fourcc(*'MPG4')
     # out = cv2.VideoWriter('video.mp4', fourcc, 60.0, (w.width, w.height))
 
+    # Main loop
     frame = 0
     while (True):
 
-        rainbow(w, t)
+        rainbow.rainbow(t)
 
         # screen = rainbow(w, t)
         # out.write(screen)
