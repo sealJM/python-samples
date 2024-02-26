@@ -44,7 +44,7 @@ class Rainbow:
         self.w = w
         self.c = 128
 
-    def rainbow(self, t):
+    def render(self, t):
         # Blank the screen
         # self.screen[:, :, :] = 0
 
@@ -96,7 +96,7 @@ def main():
     frame = 0
     while (True):
 
-        rainbow.rainbow(t)
+        rainbow.render(t)
 
         # screen = rainbow(w, t)
         # out.write(screen)
