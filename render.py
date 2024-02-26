@@ -38,7 +38,7 @@ class Time_D:
 class Rainbow:
     def __init__(self, w) -> None:
         # Create 1d array for width
-        self.x_coords = np.linspace(0, 1, w.width)
+        self.x = np.linspace(0, 1, w.width)
         # Create screen array for colour space
         self.screen = np.zeros((w.height, w.width, 3), dtype=np.uint8)
         self.w = w
@@ -51,25 +51,21 @@ class Rainbow:
         # Time elapsed is used to move the rotation of colours
         t = t.elapsed()
 
-        x_coords = self.x_coords
-        screen = self.screen
-        w = self.w
-        c = self.c
-
         # Calculate the colour for each pixel based off pi, colours in 3 phase
-        b = c*(np.sin((x_coords+(t))*np.pi))+c
-        g = c*(np.sin(((x_coords+(t))*np.pi)+((2/3)*np.pi)))+c
-        r = c*(np.sin(((x_coords+(t))*np.pi)+((4/3)*np.pi)))+c
+        b = self.c*(np.sin((self.x+(t))*np.pi))+c
+        g = self.c*(np.sin(((self.x+(t))*np.pi)+((2/3)*np.pi)))+self.c
+        r = self.c*(np.sin(((self.x+(t))*np.pi)+((4/3)*np.pi)))+self.c
 
+        # # This was redundant added to sine wave formula
         # Scale the output of the colour value to 256 bit
         # b_scaled = (b * 255).astype(np.uint8)
         # g_scaled = (g * 255).astype(np.uint8)
         # r_scaled = (r * 255).astype(np.uint8)
 
         # Set the colour of the pixels in the given width across the y axis
-        screen[:, 0:w.width, 0] = b
-        screen[:, 0:w.width, 1] = g
-        screen[:, 0:w.width, 2] = r
+        self.screen[:, 0:w.width, 0] = b
+        self.screen[:, 0:w.width, 1] = g
+        self.screen[:, 0:w.width, 2] = r
 
         # # Old loop way
         # # Create a gradient rainbow image
@@ -80,8 +76,8 @@ class Rainbow:
         #     screen[:, x, 0] = b * 255  # Blue channel
         #     screen[:, x, 1] = g * 255  # Green channel
         #     screen[:, x, 2] = r * 255  # Red channel
-        w.show(screen)
-        return screen
+        self.w.show(self.screen)
+        return self.screen
 
 
 def main():
