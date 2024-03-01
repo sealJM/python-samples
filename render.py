@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time
+from typing import List
 
 
 class Window:
@@ -81,6 +82,9 @@ class Rainbow:
 
 
 class Quaternion:
+    Vector4 = List[float]
+    Screen = List[np.uint8]
+
     def __init__(self, w) -> None:
         # Create screen array for colour space
         self.screen = np.zeros((w.height, w.width, 3), dtype=np.uint8)
@@ -104,7 +108,7 @@ class Quaternion:
         self.scale = 50
         self.size = 2
 
-    def render(self):
+    def render(self) -> Screen:
         # Blank the screen
         self.screen[:, :, :] = 0
 
@@ -112,7 +116,7 @@ class Quaternion:
         # t = t.elapsed()
 
         # Apply rotation to each point in the array
-        self.rotate(self.v)
+        self.rotate()
 
         # Draw lines between every pair of adjacent points
         for i in range(len(self.v)):
@@ -140,8 +144,7 @@ class Quaternion:
         self.window.show(self.screen)
         return self.screen
 
-    def rotate(self, points):
-        rotated_points = []
+    def rotate(self):
         # Define a rotation quaternion (e.g., 90 degrees around the z-axis)
         # angle = (np.pi/180) * self.deg  # 90 degrees in radians
         # axis = np.array([0.5, 0.7, 1.0])  # Rotation around the z-axis
@@ -151,22 +154,20 @@ class Quaternion:
         rotation_q = np.array([1.0, self.x, self.y, self.z])
         rotation_q /= np.linalg.norm(rotation_q)
 
-        for v in points:
+        for x, i in enumerate(self.v):
             # Rotate the vector using quaternion multiplication
-            rotated_points.append(self.quaternion(rotation_q, v))
-
-        # print("Original vector:", v)
-        # print("Rotated vector:", rotated_v)
-        self.v = rotated_points
+            self.v[x] = self.quaternion(rotation_q, i)
 
     @staticmethod
-    def quaternion(q1, q2):
+    def quaternion(q1: Vector4, q2: Vector4) -> Vector4:
+        # Multiplies left then inverse right with point
         rotated_v = Quaternion.q_mult(q1, q2)
         rotated_v = Quaternion.q_mult(rotated_v, Quaternion.q_conjugate(q1))
         return rotated_v
 
     @staticmethod
-    def q_mult(q1, q2):
+    def q_mult(q1: Vector4, q2: Vector4) -> Vector4:
+        # Performs vector multiplication
         w1, x1, y1, z1 = q1
         w2, x2, y2, z2 = q2
         w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
@@ -177,7 +178,8 @@ class Quaternion:
 
     # Define quaternion conjugate
     @staticmethod
-    def q_conjugate(q):
+    def q_conjugate(q: Vector4) -> Vector4:
+        # Inverse of left quad
         w, x, y, z = q
         return np.array([w, -x, -y, -z])
 
@@ -187,9 +189,11 @@ def main():
     w = Window('Rainbow')
     # Init timer object
     t = Time_D()
+
     # Init rainbow
     # rainbow = Rainbow(w)
 
+    # Init QuaternionCube
     quad = Quaternion(w)
 
     # Define the codec and create VideoWriter object
@@ -199,11 +203,11 @@ def main():
     # Main loop
     frame = 0
     while (True):
-        # rainbow.render(t)
         screen = quad.render()
         quad.x = 0.008
         quad.y = 0.004
         quad.z = 0.002
+
         # screen = rainbow.render(t)
         out.write(screen)
 
@@ -211,12 +215,6 @@ def main():
         key = cv2.waitKey(1)
         if key & 0xFF == ord('q'):
             break
-
-        # if key & 0xFF == ord('d'):
-        #     quad.deg += 1
-
-        # if key & 0xFF == ord('a'):
-        #     quad.deg -= 1
 
         # Calculate FPS averaged over 60 frames
         frame += 1
