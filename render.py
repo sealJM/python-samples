@@ -186,7 +186,7 @@ class Quaternion:
 
 def main():
     # Init window
-    w = Window('Rainbow')
+    w = Window('Cube')
     # Init timer object
     t = Time_D()
 
