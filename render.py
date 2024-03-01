@@ -112,9 +112,6 @@ class Quaternion:
         # Blank the screen
         self.screen[:, :, :] = 0
 
-        # Time elapsed is used to move the rotation of colours
-        # t = t.elapsed()
-
         # Apply rotation to each point in the array
         self.rotate()
 
@@ -145,17 +142,21 @@ class Quaternion:
         return self.screen
 
     def rotate(self):
-        # Define a rotation quaternion (e.g., 90 degrees around the z-axis)
-        # angle = (np.pi/180) * self.deg  # 90 degrees in radians
+
+        # Old code, was using deg before
+        # angle = (np.pi/180) * self.deg
         # axis = np.array([0.5, 0.7, 1.0])  # Rotation around the z-axis
         # axis /= np.linalg.norm(axis)
         # rotation_q = np.array(
         #     [np.cos(angle / 2), *np.sin(angle / 2) * axis])  # [w, x, y, z]
+
+        # Quad defining rotation
         rotation_q = np.array([1.0, self.x, self.y, self.z])
+        # Normalize the quad
         rotation_q /= np.linalg.norm(rotation_q)
 
         for x, i in enumerate(self.v):
-            # Rotate the vector using quaternion multiplication
+            # Rotate the vectors using quaternion multiplication
             self.v[x] = self.quaternion(rotation_q, i)
 
     @staticmethod
@@ -176,10 +177,9 @@ class Quaternion:
         z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
         return np.array([w, x, y, z])
 
-    # Define quaternion conjugate
     @staticmethod
     def q_conjugate(q: Vector4) -> Vector4:
-        # Inverse of left quad
+        # conjugate of quad
         w, x, y, z = q
         return np.array([w, -x, -y, -z])
 
