@@ -80,30 +80,143 @@ class Rainbow:
         return self.screen
 
 
+class Quaternion:
+    def __init__(self, w) -> None:
+        # Create screen array for colour space
+        self.screen = np.zeros((w.height, w.width, 3), dtype=np.uint8)
+        self.window = w
+        self.w = 1.0
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
+        # self.deg = 0
+        self.v = np.array([
+            [0.0, 1.0, 1.0, 1.0],
+            [0.0, -1.0, 1.0, 1.0],
+            [0.0, -1.0, -1.0, 1.0],
+            [0.0, 1.0, -1.0, 1.0],
+            [0.0, 1.0, 1.0, -1.0],
+            [0.0, -1.0, 1.0, -1.0],
+            [0.0, -1.0, -1.0, -1.0],
+            [0.0, 1.0, -1.0, -1.0],
+            # Add more vertices as needed
+        ])
+        self.scale = 50
+        self.size = 2
+
+    def render(self):
+        # Blank the screen
+        self.screen[:, :, :] = 0
+
+        # Time elapsed is used to move the rotation of colours
+        # t = t.elapsed()
+
+        # Apply rotation to each point in the array
+        self.rotate(self.v)
+
+        # Draw lines between every pair of adjacent points
+        for i in range(len(self.v)):
+            for j in range(i + 1, len(self.v)):
+                # Calculate coordinates for the current and next point
+                x1 = int(self.scale *
+                         self.v[i][1]) + int(self.window.width / 2)
+                y1 = -int(self.scale *
+                          self.v[i][2]) + int(self.window.height / 2)
+                x2 = int(self.scale *
+                         self.v[j][1]) + int(self.window.width / 2)
+                y2 = -int(self.scale *
+                          self.v[j][2]) + int(self.window.height / 2)
+                # Draw a line between the current and next point
+                cv2.line(self.screen, (x1, y1), (x2, y2),
+                         (255, 255, 255), thickness=1)
+
+        for v in self.v:
+            # Set the colour of the pixels in the given width across the y axis
+            x = int(self.scale*v[1])+int(self.window.width/2)
+            y = -int(self.scale*v[2])+int(self.window.height/2)
+            self.screen[y-self.size:y+self.size,
+                        x-self.size:x+self.size, :] = 255
+
+        self.window.show(self.screen)
+        return self.screen
+
+    def rotate(self, points):
+        rotated_points = []
+        # Define a rotation quaternion (e.g., 90 degrees around the z-axis)
+        # angle = (np.pi/180) * self.deg  # 90 degrees in radians
+        # axis = np.array([0.5, 0.7, 1.0])  # Rotation around the z-axis
+        # axis /= np.linalg.norm(axis)
+        # rotation_q = np.array(
+        #     [np.cos(angle / 2), *np.sin(angle / 2) * axis])  # [w, x, y, z]
+        rotation_q = np.array([1.0, self.x, self.y, self.z])
+        rotation_q /= np.linalg.norm(rotation_q)
+
+        for v in points:
+            # Rotate the vector using quaternion multiplication
+            rotated_points.append(self.quaternion(rotation_q, v))
+
+        # print("Original vector:", v)
+        # print("Rotated vector:", rotated_v)
+        self.v = rotated_points
+
+    @staticmethod
+    def quaternion(q1, q2):
+        rotated_v = Quaternion.q_mult(q1, q2)
+        rotated_v = Quaternion.q_mult(rotated_v, Quaternion.q_conjugate(q1))
+        return rotated_v
+
+    @staticmethod
+    def q_mult(q1, q2):
+        w1, x1, y1, z1 = q1
+        w2, x2, y2, z2 = q2
+        w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
+        x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2
+        y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
+        z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
+        return np.array([w, x, y, z])
+
+    # Define quaternion conjugate
+    @staticmethod
+    def q_conjugate(q):
+        w, x, y, z = q
+        return np.array([w, -x, -y, -z])
+
+
 def main():
     # Init window
     w = Window('Rainbow')
     # Init timer object
     t = Time_D()
     # Init rainbow
-    rainbow = Rainbow(w)
+    # rainbow = Rainbow(w)
+
+    quad = Quaternion(w)
 
     # Define the codec and create VideoWriter object
-    # fourcc = cv2.VideoWriter_fourcc(*'MPG4')
-    # out = cv2.VideoWriter('video.mp4', fourcc, 60.0, (w.width, w.height))
+    fourcc = cv2.VideoWriter_fourcc(*'MPG4')
+    out = cv2.VideoWriter('video.mp4', fourcc, 60.0, (w.width, w.height))
 
     # Main loop
     frame = 0
     while (True):
-
-        rainbow.render(t)
-
-        # screen = rainbow(w, t)
-        # out.write(screen)
+        # rainbow.render(t)
+        screen = quad.render()
+        quad.x = 0.008
+        quad.y = 0.004
+        quad.z = 0.002
+        # screen = rainbow.render(t)
+        out.write(screen)
 
         # Press 'q' to exit the loop
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        key = cv2.waitKey(1)
+        if key & 0xFF == ord('q'):
             break
+
+        # if key & 0xFF == ord('d'):
+        #     quad.deg += 1
+
+        # if key & 0xFF == ord('a'):
+        #     quad.deg -= 1
 
         # Calculate FPS averaged over 60 frames
         frame += 1
@@ -112,7 +225,7 @@ def main():
             print(60/t.delta())
 
     # Release everything when done
-    # out.release()
+    out.release()
     cv2.destroyAllWindows()
 
 
