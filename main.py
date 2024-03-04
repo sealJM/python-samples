@@ -34,7 +34,7 @@ prog = lib.shaders.create_shader_program(ctx, vertex, frag)
 # # Create a buffer for vertex positions
 shapes = Shapes()
 vertexes = shapes.cube()
-vbo_positions = ctx.buffer(data=shapes.shape_bytes(vertexes))
+vbo_positions = ctx.buffer(shapes.shape_bytes(vertexes))
 
 
 # Create a buffer for vertex colors
