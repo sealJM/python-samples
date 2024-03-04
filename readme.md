@@ -1,3 +1,3 @@
 # About
 
-<p>Here are some sample python programs I've built in the past</p>
+<p>Here's a sample of how to render a cube using moderngl and GLM</p>
