@@ -11,8 +11,8 @@ from lib.timer import Time_D
 
 
 # Build window
-width = 640
-height = 480
+width = 1280
+height = 720
 window_cls = glw.get_local_window_cls('pyglet')
 window = window_cls(
     size=(width, height), fullscreen=False, title='ModernGL Window',
@@ -38,7 +38,7 @@ vbo_positions = ctx.buffer(shapes.shape_bytes(vertexes))
 
 
 # Create a buffer for vertex colors
-num_vertex = len(vertexes)*3
+num_vertex = len(vertexes)
 r = np.random.rand(num_vertex)
 g = np.random.rand(num_vertex)
 b = np.random.rand(num_vertex)
@@ -78,7 +78,7 @@ while not window.is_closing:
     # vbo_positions.write(vertex_data.astype("f4").tobytes())
     deg += 0.02
     rotation_matrix = glm.rotate(
-        glm.mat4(), glm.radians(deg), glm.normalize(glm.vec3(0.8, 0.8, 0.3)))
+        glm.mat4(), glm.radians(deg), glm.normalize(glm.vec3(0.8, 0.3, 0.6)))
     # Pass the rotation matrix to the shader
     vao.program['in_rot'].write(rotation_matrix)
 
