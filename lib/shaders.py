@@ -28,5 +28,8 @@ if __name__ == "__main__":
     vertex_shader_file = "shaders\\shader.vert"
     fragment_shader_file = "shaders\\shader.frag"
 
-    shader_program = create_shader_program(ctx,
-                                           vertex_shader_file, fragment_shader_file)
+    shader_program = create_shader_program(
+        ctx,
+        vertex_shader_file,
+        fragment_shader_file
+    )

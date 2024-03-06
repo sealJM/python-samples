@@ -12,7 +12,7 @@ void main() {
     v_color = in_color;
 
             // Apply scaling
-    vec4 scaled = vec4(in_vert, 1.0) * vec4(3, 3, 3, 1.0);
+    vec4 scaled = vec4(in_vert, 1.0) * vec4(1, 1, 1, 1.0);
 
             // Apply rotation
     vec4 rotated = in_rot * scaled;

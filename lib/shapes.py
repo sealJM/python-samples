@@ -6,9 +6,9 @@ import itertools
 class Shapes:
     def __init__(self) -> None:
         self.triangle = glm.mat3(
-            1.0, 1.0, 0.0,
-            -1.0, -1.0, 0.0,
-            1.0, -1.0, 0.0,
+            0.5, 0.5, 0.0,
+            -0.5, -0.5, 0.0,
+            0.5, -0.5, 0.0,
         )
 
         self.square = [
@@ -20,18 +20,18 @@ class Shapes:
     def shape_bytes(self, vertexes):
         return struct.pack('f' * len(vertexes), *vertexes)
 
-    def cube(self):
+    def cube_1x1(self):
         rotations = {
             1: (0.0, 1.0, 0.0),  # Sides
             2: (1.0, 0.0, 0.0),  # Top/Bottom
         }
         translations = {
-            0: (0.0, 0.0, 1.0),  # Front
-            1: (1.0, 0.0, 0.0),  # Right
-            2: (0.0, 0.0, -1.0),  # Back
-            3: (-1.0, 0.0, 0.0),  # Left
-            4: (0.0, -1.0, 0.0),  # Bottom
-            5: (0.0, 1.0, 0.0),  # Top
+            0: (0.0, 0.0, 0.5),  # Front
+            1: (0.5, 0.0, 0.0),  # Right
+            2: (0.0, 0.0, -0.5),  # Back
+            3: (-0.5, 0.0, 0.0),  # Left
+            4: (0.0, -0.5, 0.0),  # Bottom
+            5: (0.0, 0.5, 0.0),  # Top
         }
 
         cube = []
