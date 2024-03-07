@@ -12,8 +12,7 @@ def new_window():
         resizable=False, vsync=False, gl_version=(3, 3)
     )
     ctx = window.ctx
-    ctx.enable(gl.CULL_FACE | gl.DEPTH_TEST)
+    ctx.enable_only(flags=gl.DEPTH_TEST | gl.CULL_FACE)
     glw.activate_context(window, ctx=ctx)
-    window.clear()
-    window.swap_buffers()
+
     return ctx, window

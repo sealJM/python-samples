@@ -1,6 +1,3 @@
-import numpy as np
-import glm
-
 # from lib.mp4_out import mp4_write
 from lib.render_loop import render_loop
 from lib.shaders import create_shader_program
@@ -9,6 +6,7 @@ from lib.shapes import Shapes
 
 
 def main():
+    objects = []
     ctx, window = new_window()
 
     # Load shaders
@@ -16,44 +14,33 @@ def main():
     frag = "shaders\\shader.frag"
     prog = create_shader_program(ctx, vertex, frag)
 
-    # # Create a buffer for vertex positions
-    shapes = Shapes()
-    vertexes = shapes.cube_1x1()
-    vbo_positions = ctx.buffer(shapes.shape_bytes(vertexes))
+    cube1 = Shapes(ctx, prog, window)
+    cube1.z = -10.0
+    cube1.x = 0
+    cube1.rot = 0.01
+    cube1.cube(5, 10)
+    cube1.buffer()
+    objects.append(cube1)
 
-    # Create a buffer for vertex colors
-    num_vertex = len(vertexes)
-    r = np.random.rand(num_vertex)
-    g = np.random.rand(num_vertex)
-    b = np.random.rand(num_vertex)
-    colors = np.dstack([r, g, b])
-    vbo_colors = ctx.buffer(colors.astype("f4").tobytes())
-
-    # Create a vertex array object (VAO) using both position and color buffers
-    vao = ctx.vertex_array(prog, [
-        (vbo_positions, '3f', 'in_vert'),
-        (vbo_colors, '3f', 'in_color')
-    ])
+    cube2 = Shapes(ctx, prog, window)
+    cube2.z = -10.0
+    cube2.x = 0.5
+    cube2.rot = -0.01
+    cube2.cube(10, 5, 2)
+    cube2.buffer()
+    objects.append(cube2)
 
     fbo = ctx.framebuffer(
-        color_attachments=[ctx.texture((window.width, window.height), 4)]
+        ctx.renderbuffer((window.width, window.height)),
+        ctx.depth_renderbuffer((window.width, window.height)),
     )
-
-    # Convert 2d space to 3d perspective
-    perspective = glm.perspectiveFov(
-        90, window.width, window.height, 0.1, 10000)
-    vao.program["in_per"].write(perspective)
-
-    # Generic offset
-    translation = glm.vec3(0.0, 0.0, -2)
-    vao.program['translation'].write(translation)
 
     # # Setup for writing to mp4 file
     # fourcc = cv2.VideoWriter_fourcc(*'MPG4')
     # out = cv2.VideoWriter('video.mp4', fourcc, 60.0, (width, height))
 
     # Begin render loop
-    render_loop(ctx, window, fbo, vao)
+    render_loop(ctx, fbo, window, objects)
 
 
 if __name__ == "__main__":

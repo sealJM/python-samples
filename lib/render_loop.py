@@ -1,28 +1,18 @@
-import moderngl as gl
-import glm
-
 from lib.timer import Time_D
 
 
-def render_loop(ctx, window, fbo, vao):
+def render_loop(ctx, fbo, window, objects):
     t = Time_D()
     # frame_time = Time_D()
-    deg = 0.0
+    # deg = 0.0
     frame = 0
     while not window.is_closing:
-
-        deg += 0.02
-        rotation_matrix = glm.rotate(
-            glm.mat4(),
-            glm.radians(deg),
-            glm.normalize(glm.vec3(0.8, 0.3, 0.6))
-        )
-        # Pass the rotation matrix to the shader
-        vao.program['in_rot'].write(rotation_matrix)
-
         fbo.use()
         fbo.clear(0.0, 0.0, 0.0, 1.0)
-        vao.render(gl.TRIANGLES)
+        # ctx.clear(gl.DEPTH_TEST)
+
+        for i in objects:
+            i.draw()
 
         ctx.copy_framebuffer(window.fbo, fbo)
 
