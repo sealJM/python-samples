@@ -3,6 +3,7 @@ from lib.render_loop import render_loop
 from lib.shaders import create_shader_program
 from lib.window import new_window
 from lib.shapes import Shapes
+import numpy as np
 
 
 def main():
@@ -14,21 +15,16 @@ def main():
     frag = "shaders\\shader.frag"
     prog = create_shader_program(ctx, vertex, frag)
 
-    cube1 = Shapes(ctx, prog, window)
-    cube1.z = -10.0
-    cube1.x = 0
-    cube1.rot = 0.01
-    cube1.cube(5, 10)
-    cube1.buffer()
-    objects.append(cube1)
+    # Init Objects
+    for i in range(1000):
+        objects.append(Shapes(ctx, prog, window))
+        objects[i].z = np.random.uniform(-15, -30)
+        objects[i].x = np.random.uniform(-50, 50)
+        objects[i].y = np.random.uniform(-50, 50)
+        objects[i].rot = np.random.uniform(-0.1, 0.1)
 
-    cube2 = Shapes(ctx, prog, window)
-    cube2.z = -10.0
-    cube2.x = 0.5
-    cube2.rot = -0.01
-    cube2.cube(10, 5, 2)
-    cube2.buffer()
-    objects.append(cube2)
+        objects[i].cube()
+        objects[i].buffer()
 
     fbo = ctx.framebuffer(
         ctx.renderbuffer((window.width, window.height)),

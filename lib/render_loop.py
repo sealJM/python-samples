@@ -9,13 +9,11 @@ def render_loop(ctx, fbo, window, objects):
     while not window.is_closing:
         fbo.use()
         fbo.clear(0.0, 0.0, 0.0, 1.0)
-        # ctx.clear(gl.DEPTH_TEST)
 
         for i in objects:
             i.draw()
 
         ctx.copy_framebuffer(window.fbo, fbo)
-
         window.swap_buffers()
 
         # # Write to video file

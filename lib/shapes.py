@@ -75,7 +75,8 @@ class Shapes:
 
     def draw(self):
         # Position
-        translation = glm.vec3(self.x, self.y, self.z)
+        translation = glm.vec3(
+            self.x, self.y*glm.sin(glm.radians(self.deg)), self.z)
         self.vao.program['translation'].write(translation)
 
         # Scale
